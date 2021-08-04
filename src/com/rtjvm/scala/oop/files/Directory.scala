@@ -3,7 +3,7 @@ package com.rtjvm.scala.oop.files
 //there should be some override in front of parentPath and name but for now it gives only errors
 class Directory(val parentPath : String, val name: String, val contents: List[DirEntry]) extends DirEntry(parentPath,name)
 {
-
+    def hasEntry(name : String): Boolean = ???
 }
 object Directory
 {
