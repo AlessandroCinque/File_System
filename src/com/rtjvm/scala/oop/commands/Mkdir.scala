@@ -1,5 +1,5 @@
 package com.rtjvm.scala.oop.commands
-import com.rtjvm.scala.oop.files.Directory
+import com.rtjvm.scala.oop.files.{DirEntry, Directory}
 import com.rtjvm.scala.oop.filesystem.State
 
 class Mkdir(name: String) extends  Command
@@ -32,6 +32,35 @@ class Mkdir(name: String) extends  Command
         }
         def doMkdir(state: State, name: String): State =
         {
+            def updateStructure(currentDirectory: Directory, path: List[String], newEntry:DirEntry): Directory =
+            {
+                if(path.isEmpty)
+                {
+                    currentDirectory.addEntry(newEntry)
+                }
+                else
+                {
+                    val oldEntry = currentDirectory.findEntry(path.head).asDirectory
+                    currentDirectory.replaceEntry(oldEntry.name ,updateStructure(oldEntry, path.tail, newEntry))
+                }
+            }
+
+            val wd = state.wd
+
+            //1 all the directories entry in the WD
+            val allDirsInPath = wd.getAllFoldersInPath
+
+            //2 create new directory entry in the wd
+            val newDir = Directory.empty(wd.path,name)
+
+            //3 update the whole directory structure starting from the root
+            val newRoot = updateStructure(state.root,allDirsInPath, newDir
+
+            //4 find the new working directory INSTANCE given wd's full path
+            val newWd = newRoot.findDescendant(allDirsInPath)
+
+            State(newRoot, newWd)
+
 
         }
     }
