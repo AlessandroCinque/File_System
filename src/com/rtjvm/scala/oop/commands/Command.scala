@@ -8,6 +8,8 @@ object Command
 {
     val MKDIR = "mkdir"
 
+    val LS = "ls"
+
     def from(input: String): Command =
     {
         def emptyCommand: Command = new Command
@@ -26,6 +28,10 @@ object Command
         {
             if(tokens.length < 2) incompleteCommand(MKDIR)
             else new Mkdir(tokens(1))
+        }
+        else if (LS.equals(tokens(0)))
+        {
+            new Ls
         }
         else new UnknownCommand
     }

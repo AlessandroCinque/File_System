@@ -1,20 +1,53 @@
 package com.rtjvm.scala.oop.files
 
+import scala.annotation.tailrec
+
 //there should be some override in front of parentPath and name but for now it gives only errors
 class Directory(val parentPath : String, val name: String, val contents: List[DirEntry]) extends DirEntry(parentPath,name)
 {
-    def hasEntry(name : String): Boolean = ???
+    //It is just a method to check if is there is something or not
+    def hasEntry(name : String): Boolean =
+    {
+        findEntry(name) != null
+    }
+
     def getAllFoldersInPath: List[String]=
     {
-        path.substring(1).split(Directory.SEPARATOR).toList
+        path.substring(1).split(Directory.SEPARATOR).toList.filter(x => ! x.isEmpty)
     }
-    def findDescendant(path: List[String]): Directory = ???
 
-    def addEntry(newEntry: DirEntry): Directory = ???
+    def findDescendant(path: List[String]): Directory =
+    {
+        if(path.isEmpty) this
+        else
+        {
+            findEntry(path.head).asDirectory.findDescendant(path.tail)
+        }
+    }
 
-    def findEntry(entryName: String): DirEntry = ???
+    def addEntry(newEntry: DirEntry): Directory =
+    {
+        new Directory(parentPath,name,contents:+ newEntry)
+    }
 
-    def replaceEntry(entryName: String,newEntry: DirEntry): Directory = ???
+    def findEntry(entryName: String): DirEntry =
+    {
+        @tailrec
+        def findEntryHelper(name: String, contentList: List[DirEntry]): DirEntry =
+        {
+            if(contentList.isEmpty) null
+            else if(contentList.head.name.equals(name)) contentList.head
+            else findEntryHelper(name,contentList.tail)
+        }
+        findEntryHelper(entryName,contents)
+    }
+
+    def replaceEntry(entryName: String,newEntry: DirEntry): Directory =
+    {
+        new Directory(parentPath,name,contents.filter( e => ! e.name.equals(entryName)) :+ newEntry)
+    }
+
+    def getType: String = "Directory"
 
     override def asDirectory: Directory = ???
 }
