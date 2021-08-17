@@ -2,6 +2,7 @@ package com.rtjvm.scala.oop.commands
 import com.rtjvm.scala.oop.files.{DirEntry, Directory}
 import com.rtjvm.scala.oop.filesystem.State
 
+import javax.naming.spi.DirStateFactory.Result
 import scala.annotation.tailrec
 
 class Cd(dir: String) extends Command
@@ -50,9 +51,32 @@ class Cd(dir: String) extends Command
                 else findEntryHelper(nextDir.asDirectory,path.tail)
             }
         }
-        //getting all the path between the slashes
+
+        //1 getting all the path between the slashes
         val tokens: List[String] = path.substring(1).split(Directory.SEPARATOR).toList
 
-        findEntryHelper(root,tokens)
+        //1.5 collapse relative tokens
+        @tailrec
+        def collapseRelativeTokens(path: List[String], result: List[String]): List[String] =
+        {
+            if(path.isEmpty)result
+            else if(".".equals((path.head))) collapseRelativeTokens(path.tail,result.init)
+            else if("..".equals(path.head))
+            {
+                // all this tails,heads and init are filtering the passed-in values
+                if(result.isEmpty) null
+                else collapseRelativeTokens(path.tail, result.tail)
+            }
+            else
+            {
+                // all this tails,heads and init are filtering the passed-in values
+                collapseRelativeTokens(path.tail,result :+ path.head)
+            }
+        }
+        val newTokens = collapseRelativeTokens(tokens, List())
+        // 2 navigating to entry
+        if(newTokens == null) null
+        else findEntryHelper(root,newTokens)
+
     }
 }
