@@ -2,7 +2,7 @@ package com.rtjvm.scala.oop.files
 
 import com.rtjvm.scala.oop.filesystem.FilesystemException
 
-class File (override  val parentPath: String, override val name: String, contents: String)
+class File (override  val parentPath: String, override val name: String, val contents: String)
     extends DirEntry(parentPath, name)
 {
     def asDirectory: Directory =  throw new FilesystemException("File cannot be convertyed in Directory")
@@ -18,7 +18,7 @@ class File (override  val parentPath: String, override val name: String, content
     }
     def appendContents(newContents: String): File =
     {
-        setContents(contents + "/n" + newContents)
+        setContents(contents + "\n" + newContents)
     }
 
 }

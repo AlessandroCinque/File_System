@@ -20,6 +20,8 @@ object Command
 
     val ECHO = "echo"
 
+    val CAT = "cat"
+
     def from(input: String): Command =
     {
         def emptyCommand: Command = new Command
@@ -66,6 +68,11 @@ object Command
         {
             if(tokens.length < 2) incompleteCommand(ECHO)
             else new Echo(tokens.tail)
+        }
+        else if(CAT.equals(tokens(0)))
+        {
+            if(tokens.length < 2) incompleteCommand(CAT)
+            else new Cat(tokens(1))
         }
         else new UnknownCommand
     }
